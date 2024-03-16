@@ -54,15 +54,24 @@
         "title": "xLog: Download Post to Workspace"
       },
       {
-        "command": "xlog.upload",
-        "title": "xLog: Upload Post"
+        "command": "xlog.create",
+        "title": "xLog: Create Post"
+      },
+      {
+        "command": "xlog.update",
+        "title": "xLog: Update Post"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "when": "resourceLangId == markdown",
-          "command": "xlog.upload",
+          "command": "xlog.create",
+          "group": "z_commands"
+        },
+        {
+          "when": "resourceLangId == markdown",
+          "command": "xlog.update",
           "group": "z_commands"
         }
       ]
@@ -93,8 +102,8 @@
     "lint-staged": "^15.2.2",
     "pnpm": "^8.15.4",
     "rimraf": "^5.0.5",
-    "sakuin": "0.1.0-alpha.8",
-    "simple-git-hooks": "^2.10.0",
+    "sakuin": "0.1.0-alpha.9",
+    "simple-git-hooks": "^2.11.0",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",
     "vite": "^5.1.6",

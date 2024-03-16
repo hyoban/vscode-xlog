@@ -45,11 +45,11 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       sakuin:
-        specifier: 0.1.0-alpha.8
-        version: 0.1.0-alpha.8(typescript@5.4.2)
+        specifier: 0.1.0-alpha.9
+        version: 0.1.0-alpha.9(typescript@5.4.2)
       simple-git-hooks:
-        specifier: ^2.10.0
-        version: 2.10.0
+        specifier: ^2.11.0
+        version: 2.11.0
       tsup:
         specifier: ^8.0.2
         version: 8.0.2(typescript@5.4.2)
@@ -779,7 +779,7 @@ packages:
       graphemer: 1.4.0
       ignore: 5.2.4
       natural-compare: 1.4.0
-      semver: 7.5.4
+      semver: 7.6.0
       ts-api-utils: 1.0.3(typescript@5.4.2)
       typescript: 5.4.2
     transitivePeerDependencies:
@@ -4643,8 +4643,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /sakuin@0.1.0-alpha.8(typescript@5.4.2):
-    resolution: {integrity: sha512-+HG+YhueuHfezIe5FBqFREbOtItJoY6fZdxE+J6C494UpeLH2+EKmhpVTAg0OOiZKoXdHJwzXI23iXWw5luNfw==}
+  /sakuin@0.1.0-alpha.9(typescript@5.4.2):
+    resolution: {integrity: sha512-WtCa9nCK4n9wLsie4PLtMcklMv7NlFPBf0izTaQuebBjStAKQKecv3Vubngrz2tCaMzTigPO+l6Ayd8mwA/wAA==}
     dependencies:
       '@urql/core': 4.3.0
       crossbell: 1.11.9(typescript@5.4.2)
@@ -4768,8 +4768,8 @@ packages:
     dev: true
     optional: true
 
-  /simple-git-hooks@2.10.0:
-    resolution: {integrity: sha512-TtCytVYfV77pILCkzVxpOSgYKHQyaO7fBI/iwG5bLGb0dIo/v/K1Y1IZ5DN40RQu6WNNJiN0gkuRvSYjxOhFog==}
+  /simple-git-hooks@2.11.0:
+    resolution: {integrity: sha512-Wab2uzjGJEL8Kx+2UY8waUSfkiolt2RbaAJWvPCjaAEXrrKoS7JqPk4STiIVl/yt3asZRUzFoK2ryhwvgh5rYw==}
     hasBin: true
     requiresBuild: true
     dev: true
