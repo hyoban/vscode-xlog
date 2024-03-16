@@ -17,8 +17,6 @@ export function activate(extContext: vscode.ExtensionContext) {
   const xLogHandle = configration.get('xlog.handle') as string | undefined
   const xLogPostFolder = configration.get('xlog.post-folder') as string | undefined
 
-  logger.appendLine(`${JSON.stringify({ xLogToken, xLogHandle, xLogFolder: xLogPostFolder })}`)
-
   if (!xLogToken || !xLogHandle || !xLogPostFolder) {
     logger.appendLine('xLog is not properly configured')
     return
