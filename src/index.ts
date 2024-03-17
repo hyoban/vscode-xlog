@@ -5,7 +5,7 @@ import type { PostInput } from 'sakuin'
 import { Client } from 'sakuin'
 import * as vscode from 'vscode'
 
-const client = new Client({ xLogBase: 'xlog.page' })
+const client = new Client()
 
 export function activate(extContext: vscode.ExtensionContext) {
   const logger = vscode.window.createOutputChannel('xLog')
@@ -66,6 +66,7 @@ export function activate(extContext: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('Creating post on xLog')
     try {
       const { fileName, parsed } = await readEditorFile(editor)
+      logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.put({
         token: xLogToken,
         handleOrCharacterId: xLogHandle,
@@ -80,19 +81,19 @@ export function activate(extContext: vscode.ExtensionContext) {
           tags: parsed.attributes.tags || [],
         },
       })
+      vscode.window.showInformationMessage('Created post on xLog')
     }
     catch (error) {
-      if (error instanceof Error)
-        logger.appendLine(`Error: ${error.message}`)
+      logger.appendLine(String(error))
+      vscode.window.showErrorMessage('Failed to create post on xLog')
     }
-    vscode.window.showInformationMessage('Created post on xLog')
   }
 
   const updateHandler = async (editor: vscode.TextEditor) => {
     vscode.window.showInformationMessage('Updating post on xLog')
     try {
       const { fileName, parsed } = await readEditorFile(editor)
-
+      logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.update({
         handleOrCharacterId: xLogHandle,
         token: xLogToken,
@@ -102,12 +103,12 @@ export function activate(extContext: vscode.ExtensionContext) {
           content: parsed.body,
         },
       })
+      vscode.window.showInformationMessage('Updated post on xLog')
     }
     catch (error) {
-      if (error instanceof Error)
-        logger.appendLine(`Error: ${error.message}`)
+      logger.appendLine(String(error))
+      vscode.window.showErrorMessage('Failed to update post on xLog')
     }
-    vscode.window.showInformationMessage('Updated post on xLog')
   }
 
   extContext.subscriptions.push(
