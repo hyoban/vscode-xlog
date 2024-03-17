@@ -102,7 +102,7 @@
     "lint-staged": "^15.2.2",
     "pnpm": "^8.15.4",
     "rimraf": "^5.0.5",
-    "sakuin": "0.1.0-alpha.9",
+    "sakuin": "0.1.0-alpha.12",
     "simple-git-hooks": "^2.11.0",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",

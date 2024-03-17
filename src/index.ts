@@ -25,7 +25,7 @@ export function activate(extContext: vscode.ExtensionContext) {
   const downloadHandler = async () => {
     vscode.window.showInformationMessage('Downloading posts from xLog')
     try {
-      const posts = await client.post.getAll(xLogHandle, { convertUrlToGateway: false })
+      const posts = await client.post.getAll(xLogHandle, { raw: true })
       const workspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
       if (!workspace)
         return
@@ -38,7 +38,7 @@ export function activate(extContext: vscode.ExtensionContext) {
         fileContent += `summary: ${post.summary}\n`
         fileContent += `slug: ${post.slug}\n`
         fileContent += `disableAISummary: ${post.disableAISummary}\n`
-        fileContent += `cover: ${post.cover?.address ?? ''}\n`
+        fileContent += `cover: ${post.cover}\n`
         fileContent += 'tags:\n'
         for (const tag of post.tags)
           fileContent += `  - ${tag}\n`
@@ -66,17 +66,19 @@ export function activate(extContext: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('Creating post on xLog')
     try {
       const { fileName, parsed } = await readEditorFile(editor)
-      await client.post.put(xLogToken, xLogHandle, {
-        content: parsed.body,
-        slug: parsed.attributes.slug || fileName,
-        title: parsed.attributes.title || 'Untitled',
-        datePublishedAt: parsed.attributes.datePublishedAt || '',
-        summary: parsed.attributes.summary || '',
-        disableAISummary: parsed.attributes.disableAISummary || false,
-        cover: {
-          address: parsed.attributes.cover || '',
+      await client.post.put({
+        token: xLogToken,
+        handleOrCharacterId: xLogHandle,
+        post: {
+          content: parsed.body,
+          slug: parsed.attributes.slug || fileName,
+          title: parsed.attributes.title || 'Untitled',
+          datePublishedAt: parsed.attributes.datePublishedAt || '',
+          summary: parsed.attributes.summary || '',
+          disableAISummary: parsed.attributes.disableAISummary || false,
+          cover: parsed.attributes.cover || '',
+          tags: parsed.attributes.tags || [],
         },
-        tags: parsed.attributes.tags || [],
       })
     }
     catch (error) {
@@ -90,33 +92,16 @@ export function activate(extContext: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('Updating post on xLog')
     try {
       const { fileName, parsed } = await readEditorFile(editor)
-      const slug = parsed.attributes.slug || fileName
-      const post = await client.post.getBySlug(xLogHandle, slug)
-      if (!post)
-        return vscode.window.showErrorMessage('Post not found on xLog')
 
-      const contentToUpdate = post
-      if (parsed.attributes.title)
-        contentToUpdate.title = parsed.attributes.title
-      if (parsed.attributes.datePublishedAt)
-        contentToUpdate.datePublishedAt = parsed.attributes.datePublishedAt
-      if (parsed.attributes.summary)
-        contentToUpdate.summary = parsed.attributes.summary
-      if (parsed.attributes.disableAISummary)
-        contentToUpdate.disableAISummary = parsed.attributes.disableAISummary
-      if (parsed.attributes.cover)
-        contentToUpdate.cover = { address: parsed.attributes.cover }
-      if (parsed.attributes.tags)
-        contentToUpdate.tags = parsed.attributes.tags
-      if (parsed.body)
-        contentToUpdate.content = parsed.body
-
-      await client.post.update(
-        xLogToken,
-        xLogHandle,
-        post.noteId,
-        contentToUpdate,
-      )
+      await client.post.update({
+        handleOrCharacterId: xLogHandle,
+        token: xLogToken,
+        slug: parsed.attributes.slug || fileName,
+        post: {
+          ...parsed.attributes,
+          content: parsed.body,
+        },
+      })
     }
     catch (error) {
       if (error instanceof Error)

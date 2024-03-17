@@ -45,8 +45,8 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       sakuin:
-        specifier: 0.1.0-alpha.9
-        version: 0.1.0-alpha.9(typescript@5.4.2)
+        specifier: 0.1.0-alpha.12
+        version: 0.1.0-alpha.12(typescript@5.4.2)
       simple-git-hooks:
         specifier: ^2.11.0
         version: 2.11.0
@@ -4643,8 +4643,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /sakuin@0.1.0-alpha.9(typescript@5.4.2):
-    resolution: {integrity: sha512-WtCa9nCK4n9wLsie4PLtMcklMv7NlFPBf0izTaQuebBjStAKQKecv3Vubngrz2tCaMzTigPO+l6Ayd8mwA/wAA==}
+  /sakuin@0.1.0-alpha.12(typescript@5.4.2):
+    resolution: {integrity: sha512-ZqCaTx+cUaW8zd2iY7TIwkCLz1B9lFUi8eALyxixuF+Aoz5dwN1f30xznB1Vv7QQbKzXwOOov0XM9fDV9P9fCw==}
     dependencies:
       '@urql/core': 4.3.0
       crossbell: 1.11.9(typescript@5.4.2)
