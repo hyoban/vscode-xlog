@@ -19,5 +19,6 @@ Create a configuration in your vscode settings.json file:
 
 You can download your posts or create/update a post by right-clicking your markdown file.
 
-![](./doc/demo/ScreenShot%202024-03-19%2013.46.46.mp4)
-![](./doc/demo/ScreenShot%202024-03-19%2013.50.34.mp4)
+https://github.com/hyoban/vscode-xlog/assets/38493346/28b0ffbc-47dd-41da-a185-d2f727814a61
+
+https://github.com/hyoban/vscode-xlog/assets/38493346/42fbdf40-0430-484a-9cad-50217e8b7c9d
