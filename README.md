@@ -15,10 +15,9 @@ Create a configuration in your vscode settings.json file:
 ```
 
 > [!CAUTION]
-> Do not commit your token to your repository.
->
-> You should put it in your user settings, and other settings in your workspace settings.
+> Do not commit your token to your repository. You should put it in your user settings, and other settings in your workspace settings.
 
 You can download your posts or create/update a post by right-clicking your markdown file.
 
-![ScreenShot 2024-03-16 18 48 43](https://github.com/hyoban/vscode-xlog/assets/38493346/8a11c04d-59c5-4faf-b13a-8a36e83b57da)
+![](./doc/demo/ScreenShot%202024-03-19%2013.46.46.mp4)
+![](./doc/demo/ScreenShot%202024-03-19%2013.50.34.mp4)
