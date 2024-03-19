@@ -2,7 +2,7 @@
   "publisher": "hyoban",
   "name": "xlog",
   "displayName": "xLog",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "packageManager": "pnpm@8.15.4",
   "description": "",
