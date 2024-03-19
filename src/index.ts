@@ -12,45 +12,82 @@ export function activate(extContext: vscode.ExtensionContext) {
   const logger = vscode.window.createOutputChannel('xLog')
   extContext.subscriptions.push(logger)
 
-  // check configuration
-  const configration = vscode.workspace.getConfiguration()
-  const xLogToken = configration.get('xlog.token') as string | undefined
-  const xLogHandle = configration.get('xlog.handle') as string | undefined
-  const xLogPostFolder = configration.get('xlog.post-folder') as string | undefined
+  const getConfiguration = (isWrite: boolean) => {
+    // check configuration
+    const configuration = vscode.workspace.getConfiguration()
+    const xLogToken = configuration.get('xlog.token') as string
+    const xLogHandle = configuration.get('xlog.handle') as string
+    const xLogPostFolder = configuration.get('xlog.post-folder') as string
 
-  if (!xLogToken || !xLogHandle || !xLogPostFolder) {
-    logger.appendLine('xLog is not properly configured')
-    return
+    if (isWrite && !xLogToken) {
+      vscode.window.showErrorMessage('xLog token is not set')
+      return
+    }
+
+    if (!xLogHandle) {
+      vscode.window.showErrorMessage('xLog handle is not set')
+      return
+    }
+
+    if (!xLogPostFolder) {
+      vscode.window.showErrorMessage('xLog post folder is not set')
+      return
+    }
+
+    return { xLogToken, xLogHandle, xLogPostFolder }
   }
 
   const downloadHandler = async () => {
-    vscode.window.showInformationMessage('Downloading posts from xLog')
-    try {
-      const posts = await client.post.getAll(xLogHandle, { raw: true })
-      const workspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
-      if (!workspace)
-        return
-      const folder = path.join(workspace, xLogPostFolder)
-      for (const post of posts) {
-        const filename = path.join(folder, `${post.slug}.md`)
-        const attributes = {
-          title: post.title,
-          datePublishedAt: post.datePublishedAt,
-          summary: post.summary,
-          slug: post.slug,
-          disableAISummary: post.disableAISummary,
-          cover: post.cover,
-          tags: post.tags,
+    vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: 'Downloading posts from xLog',
+        cancellable: false,
+      },
+      async (progress) => {
+        try {
+          const workspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+          if (!workspace)
+            return
+          const configuration = getConfiguration(false)
+          if (!configuration)
+            return
+          const { xLogHandle, xLogPostFolder } = configuration
+          progress.report({ message: 'fetching', increment: 0 })
+          let { list: posts, count, cursor } = await client.post.getMany(xLogHandle, { raw: true })
+          do {
+            const folder = path.join(workspace, xLogPostFolder)
+            for (const post of posts) {
+              const filename = path.join(folder, `${post.slug}.md`)
+              const attributes = {
+                title: post.title,
+                datePublishedAt: post.datePublishedAt,
+                summary: post.summary,
+                slug: post.slug,
+                disableAISummary: post.disableAISummary,
+                cover: post.cover,
+                tags: post.tags,
+              }
+              const fileContent = `---\n${stringify(attributes)}---\n\n${post.content}`
+              await vscode.workspace.fs.writeFile(vscode.Uri.file(filename), Buffer.from(fileContent))
+              progress.report({
+                message: post.title,
+                increment: 100 / count,
+              })
+            }
+            if (cursor) {
+              ({ list: posts, count, cursor } = await client.post.getMany(xLogHandle, { cursor, raw: true }))
+              progress.report({ message: 'fetching', increment: 0 })
+            }
+          } while (cursor)
         }
-        const fileContent = `---\n${stringify(attributes)}---\n\n${post.content}`
-        await vscode.workspace.fs.writeFile(vscode.Uri.file(filename), Buffer.from(fileContent))
-      }
-    }
-    catch (error) {
-      if (error instanceof Error)
-        logger.appendLine(`Error: ${error.message}`)
-    }
-    vscode.window.showInformationMessage('Posts downloaded from xLog')
+        catch (error) {
+          if (error instanceof Error)
+            logger.appendLine(`Error: ${error.message}`)
+        }
+        vscode.window.showInformationMessage('Posts downloaded from xLog')
+      },
+    )
   }
 
   const readEditorFile = async (editor: vscode.TextEditor) => {
@@ -64,6 +101,10 @@ export function activate(extContext: vscode.ExtensionContext) {
   const uploadHandler = async (editor: vscode.TextEditor) => {
     vscode.window.showInformationMessage('Creating post on xLog')
     try {
+      const configuration = getConfiguration(true)
+      if (!configuration)
+        return
+      const { xLogHandle, xLogToken } = configuration
       const { fileName, parsed } = await readEditorFile(editor)
       logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.put({
@@ -91,6 +132,10 @@ export function activate(extContext: vscode.ExtensionContext) {
   const updateHandler = async (editor: vscode.TextEditor) => {
     vscode.window.showInformationMessage('Updating post on xLog')
     try {
+      const configuration = getConfiguration(true)
+      if (!configuration)
+        return
+      const { xLogHandle, xLogToken } = configuration
       const { fileName, parsed } = await readEditorFile(editor)
       logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.update({
