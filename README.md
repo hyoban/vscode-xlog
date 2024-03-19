@@ -26,7 +26,11 @@ JSON.parse(localStorage.getItem("connect-kit:account")).state.wallet.siwe.token;
 > [!NOTE]
 > Read more: [技术折腾 xLog 2 深入理解 xlog 的鉴权](https://blog.ijust.cc/play-xlog-02)
 
-You can download your posts or create/update a post by right-clicking your markdown file.
+## Features
+
+1. download your posts
+1. create/update a post by right-clicking your markdown file.
+1. upload any file to ipfs by right-clicking your file.
 
 https://github.com/hyoban/vscode-xlog/assets/38493346/28b0ffbc-47dd-41da-a185-d2f727814a61
 
