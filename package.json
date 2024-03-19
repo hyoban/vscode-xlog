@@ -60,6 +60,10 @@
       {
         "command": "xlog.update",
         "title": "xLog: Update Post"
+      },
+      {
+        "command": "xlog.uploadFile",
+        "title": "xLog: Upload File"
       }
     ],
     "menus": {
@@ -72,6 +76,10 @@
         {
           "when": "resourceLangId == markdown",
           "command": "xlog.update",
+          "group": "z_commands"
+        },
+        {
+          "command": "xlog.uploadFile",
           "group": "z_commands"
         }
       ]
@@ -104,7 +112,7 @@
     "release-it": "^17.1.1",
     "release-it-pnpm": "^4.1.3",
     "rimraf": "^5.0.5",
-    "sakuin": "0.1.0-alpha.12",
+    "sakuin": "^0.1.1",
     "simple-git-hooks": "^2.11.0",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",

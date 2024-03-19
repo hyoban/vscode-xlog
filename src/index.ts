@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import fm from 'front-matter'
@@ -159,5 +160,14 @@ export function activate(extContext: vscode.ExtensionContext) {
     vscode.commands.registerCommand('xlog.download', downloadHandler),
     vscode.commands.registerTextEditorCommand('xlog.create', uploadHandler),
     vscode.commands.registerTextEditorCommand('xlog.update', updateHandler),
+    vscode.commands.registerCommand('xlog.uploadFile', async (uri: vscode.Uri) => {
+      vscode.window.showInformationMessage(`Start uploading file ${path.basename(uri.fsPath)}`)
+      logger.appendLine(`Uploading file: ${uri.fsPath}`)
+      const fileContent = await fs.readFile(uri.fsPath, { encoding: null })
+      const result = await client.uploadFile(new Blob([fileContent]))
+      logger.appendLine(JSON.stringify(result, null, 2))
+      vscode.env.clipboard.writeText(result.web2url)
+      vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+    }),
   )
 }
