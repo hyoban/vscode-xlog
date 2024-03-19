@@ -84,7 +84,7 @@
     "pack": "vsce package --no-dependencies",
     "prepare": "simple-git-hooks",
     "publish": "vsce publish --no-dependencies",
-    "release": "bumpp && nr publish",
+    "release": "release-it",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "vscode:prepublish": "nr build"
@@ -101,6 +101,8 @@
     "front-matter": "^4.0.2",
     "lint-staged": "^15.2.2",
     "pnpm": "^8.15.4",
+    "release-it": "^17.1.1",
+    "release-it-pnpm": "^4.1.3",
     "rimraf": "^5.0.5",
     "sakuin": "0.1.0-alpha.12",
     "simple-git-hooks": "^2.11.0",
