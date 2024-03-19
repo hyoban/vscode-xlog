@@ -4,6 +4,7 @@ import fm from 'front-matter'
 import type { PostInput } from 'sakuin'
 import { Client } from 'sakuin'
 import * as vscode from 'vscode'
+import { stringify } from 'yaml'
 
 const client = new Client()
 
@@ -32,18 +33,16 @@ export function activate(extContext: vscode.ExtensionContext) {
       const folder = path.join(workspace, xLogPostFolder)
       for (const post of posts) {
         const filename = path.join(folder, `${post.slug}.md`)
-        let fileContent = '---\n'
-        fileContent += `title: ${post.title}\n`
-        fileContent += `datePublishedAt: ${post.datePublishedAt}\n`
-        fileContent += `summary: ${post.summary}\n`
-        fileContent += `slug: ${post.slug}\n`
-        fileContent += `disableAISummary: ${post.disableAISummary}\n`
-        fileContent += `cover: ${post.cover}\n`
-        fileContent += 'tags:\n'
-        for (const tag of post.tags)
-          fileContent += `  - ${tag}\n`
-        fileContent += '---\n\n'
-        fileContent += post.content
+        const attributes = {
+          title: post.title,
+          datePublishedAt: post.datePublishedAt,
+          summary: post.summary,
+          slug: post.slug,
+          disableAISummary: post.disableAISummary,
+          cover: post.cover,
+          tags: post.tags,
+        }
+        const fileContent = `---\n${stringify(attributes)}---\n\n${post.content}`
         await vscode.workspace.fs.writeFile(vscode.Uri.file(filename), Buffer.from(fileContent))
       }
     }
