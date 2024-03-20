@@ -111,7 +111,7 @@ export function activate(extContext: vscode.ExtensionContext) {
       await client.post.put({
         token: xLogToken,
         handleOrCharacterId: xLogHandle,
-        post: {
+        note: {
           content: parsed.body,
           slug: parsed.attributes.slug || fileName,
           title: parsed.attributes.title || 'Untitled',
@@ -143,7 +143,7 @@ export function activate(extContext: vscode.ExtensionContext) {
         handleOrCharacterId: xLogHandle,
         token: xLogToken,
         slug: parsed.attributes.slug || fileName,
-        post: {
+        note: {
           ...parsed.attributes,
           content: parsed.body,
         },
@@ -163,11 +163,42 @@ export function activate(extContext: vscode.ExtensionContext) {
     vscode.commands.registerCommand('xlog.uploadFile', async (uri: vscode.Uri) => {
       vscode.window.showInformationMessage(`Start uploading file ${path.basename(uri.fsPath)}`)
       logger.appendLine(`Uploading file: ${uri.fsPath}`)
-      const fileContent = await fs.readFile(uri.fsPath, { encoding: null })
-      const result = await client.uploadFile(new Blob([fileContent]))
-      logger.appendLine(JSON.stringify(result, null, 2))
-      vscode.env.clipboard.writeText(result.web2url)
-      vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+      try {
+        const fileContent = await fs.readFile(uri.fsPath, { encoding: null })
+        const result = await client.uploadFile(new Blob([fileContent]))
+        logger.appendLine(JSON.stringify(result, null, 2))
+        vscode.env.clipboard.writeText(result.web2url)
+        vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+      }
+      catch (error) {
+        logger.appendLine(String(error))
+        vscode.window.showErrorMessage('Failed to upload file')
+      }
     }),
+    vscode.commands.registerTextEditorCommand(
+      'xlog.uploadFileFromUrl',
+      async (editor) => {
+        const { selection } = editor
+        const selectedText = editor.document.getText(selection)
+        if (!selectedText || !selectedText.startsWith('http')) {
+          vscode.window.showErrorMessage('No URL selected')
+          return
+        }
+
+        vscode.window.showInformationMessage('Uploading file from URL')
+        logger.appendLine(`Uploading file from URL: ${selectedText}`)
+
+        try {
+          const result = await client.uploadFileFromUrl([selectedText])
+          logger.appendLine(JSON.stringify(result, null, 2))
+          vscode.env.clipboard.writeText(result.at(0)!.web2url)
+          vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+        }
+        catch (error) {
+          logger.appendLine(String(error))
+          vscode.window.showErrorMessage('Failed to upload file from URL')
+        }
+      },
+    ),
   )
 }
