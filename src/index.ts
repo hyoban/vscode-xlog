@@ -91,22 +91,35 @@ export function activate(extContext: vscode.ExtensionContext) {
     )
   }
 
-  const readEditorFile = async (editor: vscode.TextEditor) => {
-    const filePath = editor.document.uri.fsPath
+  const readEditorFile = async (editor: vscode.TextEditor, uri?: vscode.Uri) => {
+    const filePath = uri?.fsPath || editor.document.uri.fsPath
+    // eslint-disable-next-line github/no-then
+    const isFile = await fs.stat(filePath).then(stat => stat.isFile()).catch(() => false)
+    if (!isFile) {
+      vscode.window.showErrorMessage(`Cannot read file: ${filePath}`)
+      return
+    }
     const fileName = path.basename(filePath, '.md')
     const fileContent = editor.document.getText()
     const parsed = fm<Omit<Partial<PostInput>, 'cover'> & { cover?: string }>(fileContent)
     return { fileName, parsed }
   }
 
-  const uploadHandler = async (editor: vscode.TextEditor) => {
-    vscode.window.showInformationMessage('Creating post on xLog')
+  const uploadHandler = async (
+    editor: vscode.TextEditor,
+    _edit: vscode.TextEditorEdit,
+    uri: vscode.Uri,
+  ) => {
     try {
       const configuration = getConfiguration(true)
       if (!configuration)
         return
       const { xLogHandle, xLogToken } = configuration
-      const { fileName, parsed } = await readEditorFile(editor)
+      const file = await readEditorFile(editor, uri)
+      if (!file)
+        return
+      vscode.window.showInformationMessage('Creating post on xLog')
+      const { fileName, parsed } = file
       logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.put({
         token: xLogToken,
@@ -130,14 +143,21 @@ export function activate(extContext: vscode.ExtensionContext) {
     }
   }
 
-  const updateHandler = async (editor: vscode.TextEditor) => {
-    vscode.window.showInformationMessage('Updating post on xLog')
+  const updateHandler = async (
+    editor: vscode.TextEditor,
+    _edit: vscode.TextEditorEdit,
+    uri: vscode.Uri,
+  ) => {
     try {
       const configuration = getConfiguration(true)
       if (!configuration)
         return
       const { xLogHandle, xLogToken } = configuration
-      const { fileName, parsed } = await readEditorFile(editor)
+      const file = await readEditorFile(editor, uri)
+      if (!file)
+        return
+      vscode.window.showInformationMessage('Updating post on xLog')
+      const { fileName, parsed } = file
       logger.appendLine(JSON.stringify(parsed, null, 2))
       await client.post.update({
         handleOrCharacterId: xLogHandle,
