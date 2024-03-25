@@ -91,8 +91,13 @@ export function activate(extContext: vscode.ExtensionContext) {
     )
   }
 
-  const readEditorFile = async (editor: vscode.TextEditor, uri?: vscode.Uri) => {
-    const filePath = uri?.fsPath || editor.document.uri.fsPath
+  const readSelectedFile = async (uri?: vscode.Uri) => {
+    const currentEditor = vscode.window.activeTextEditor
+    const filePath = uri?.fsPath || (currentEditor && currentEditor.document.uri.fsPath)
+    if (!filePath) {
+      vscode.window.showErrorMessage('No file selected')
+      return
+    }
     // eslint-disable-next-line github/no-then
     const isFile = await fs.stat(filePath).then(stat => stat.isFile()).catch(() => false)
     if (!isFile) {
@@ -100,22 +105,18 @@ export function activate(extContext: vscode.ExtensionContext) {
       return
     }
     const fileName = path.basename(filePath, '.md')
-    const fileContent = editor.document.getText()
-    const parsed = fm<Omit<Partial<PostInput>, 'cover'> & { cover?: string }>(fileContent)
+    const fileContent = await fs.readFile(filePath, { encoding: 'utf8' })
+    const parsed = fm<Partial<PostInput>>(fileContent)
     return { fileName, parsed }
   }
 
-  const uploadHandler = async (
-    editor: vscode.TextEditor,
-    _edit: vscode.TextEditorEdit,
-    uri: vscode.Uri,
-  ) => {
+  const uploadHandler = async (uri?: vscode.Uri) => {
     try {
       const configuration = getConfiguration(true)
       if (!configuration)
         return
       const { xLogHandle, xLogToken } = configuration
-      const file = await readEditorFile(editor, uri)
+      const file = await readSelectedFile(uri)
       if (!file)
         return
       vscode.window.showInformationMessage('Creating post on xLog')
@@ -143,17 +144,13 @@ export function activate(extContext: vscode.ExtensionContext) {
     }
   }
 
-  const updateHandler = async (
-    editor: vscode.TextEditor,
-    _edit: vscode.TextEditorEdit,
-    uri: vscode.Uri,
-  ) => {
+  const updateHandler = async (uri?: vscode.Uri) => {
     try {
       const configuration = getConfiguration(true)
       if (!configuration)
         return
       const { xLogHandle, xLogToken } = configuration
-      const file = await readEditorFile(editor, uri)
+      const file = await readSelectedFile(uri)
       if (!file)
         return
       vscode.window.showInformationMessage('Updating post on xLog')
@@ -178,8 +175,8 @@ export function activate(extContext: vscode.ExtensionContext) {
 
   extContext.subscriptions.push(
     vscode.commands.registerCommand('xlog.download', downloadHandler),
-    vscode.commands.registerTextEditorCommand('xlog.create', uploadHandler),
-    vscode.commands.registerTextEditorCommand('xlog.update', updateHandler),
+    vscode.commands.registerCommand('xlog.create', uploadHandler),
+    vscode.commands.registerCommand('xlog.update', updateHandler),
     vscode.commands.registerCommand('xlog.uploadFile', async (uri: vscode.Uri) => {
       vscode.window.showInformationMessage(`Start uploading file ${path.basename(uri.fsPath)}`)
       logger.appendLine(`Uploading file: ${uri.fsPath}`)
