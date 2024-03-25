@@ -98,7 +98,6 @@ export function activate(extContext: vscode.ExtensionContext) {
       vscode.window.showErrorMessage('No file selected')
       return
     }
-    // eslint-disable-next-line github/no-then
     const isFile = await fs.stat(filePath).then(stat => stat.isFile()).catch(() => false)
     if (!isFile) {
       vscode.window.showErrorMessage(`Cannot read file: ${filePath}`)
@@ -185,7 +184,7 @@ export function activate(extContext: vscode.ExtensionContext) {
         const result = await client.uploadFile(new Blob([fileContent]))
         logger.appendLine(JSON.stringify(result, null, 2))
         vscode.env.clipboard.writeText(result.web2url)
-        vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+        vscode.window.showInformationMessage('File uploaded, URL copied to clipboard')
       }
       catch (error) {
         logger.appendLine(String(error))
@@ -209,7 +208,7 @@ export function activate(extContext: vscode.ExtensionContext) {
           const result = await client.uploadFileFromUrl([selectedText])
           logger.appendLine(JSON.stringify(result, null, 2))
           vscode.env.clipboard.writeText(result.at(0)!.web2url)
-          vscode.window.showInformationMessage(`File uploaded, URL copied to clipboard`)
+          vscode.window.showInformationMessage('File uploaded, URL copied to clipboard')
         }
         catch (error) {
           logger.appendLine(String(error))
