@@ -15,9 +15,9 @@ Create a configuration in your vscode settings.json file:
 ```
 
 > [!CAUTION]
-> Do not commit your token to your repository. You should put it in your user settings, and other settings in your workspace settings.
+> Do not commit your token to your repository. You should put it in both your user settings and your workspace settings.(In VSCode, click on the gear icon in the bottom left corner and navigate to Settings. Searching for 'xlog' will allow you to find both the user settings and workspace settings.)
 
-To get your token, go to your xLog dashboard, open developer tools, and run the following code:
+To get your token, go to your xLog dashboard, open developer tools (F12), and run the following code in console:
 
 ```javascript
 JSON.parse(localStorage.getItem("connect-kit:account")).state.wallet.siwe.token;
