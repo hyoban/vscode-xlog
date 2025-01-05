@@ -32,7 +32,7 @@
     { "rule": "antfu/import-dedupe", "severity": "off" },
     { "rule": "format/prettier", "severity": "off" },
     { "rule": "jsonc/indent", "severity": "off" },
-    { "rule": "hyoban/no-extra-space-jsx-expression", "severity": "off" },
+    { "rule": "hyoban/no-extra-space-jsx-expression", "severity": "off" }
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
